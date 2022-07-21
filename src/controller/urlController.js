@@ -10,10 +10,43 @@ const createShortUrl = async function (req, res) {
         if (!validUrl.isUri(url.toString())) {
             return res.status(400).send({ status: false, msg: "enter valid url" })
         }
+        
+        
+
         let urlcheck = await urlModel.findOne({ longUrl: url }).select({ createdAt: 0, updatedAt: 0, __v: 0, _id: 0 })
         if (urlcheck) return res.status(200).send({ status: true, data: urlcheck })
 
-        let urlCode = shortId.generate()
+
+
+
+
+
+
+        let urlCode = shortId.generate();
+
+
+        // while(true){
+        //     urlCode = shortId.generate();
+
+        //     if(! await urlModel.findOne({urlCode:urlCode})){
+        //         break;
+        //     }
+        // }
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
         req.body.urlCode = urlCode
         let shortUrl = "http://localhost:3000/" + urlCode
 
@@ -38,7 +71,7 @@ const getUrl = async function (req, res) {
         if(!validation.isValid(reqParams)) return res.status(400).send({ status: false, msg: 'Url code cannot be blank' }) 
         let findUrlCode = await urlModel.findOne({ urlCode: reqParams }).select({ longUrl: 1, _id: 0 })
         if(findUrlCode == null) return res.status(400).send({ status: false, msg: 'Url not found' })
-        return res.status(302).send({ status: true, data: findUrlCode })
+        return res.status(302).redirect(findUrlCode.longUrl)
     }
     catch (error) {
         res.status(500).send({ msg: error.message })
